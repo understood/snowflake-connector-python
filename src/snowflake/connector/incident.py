@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2021 Snowflake Computing Inc. All rights reserved.
 #
+
+from __future__ import annotations
 
 import logging
 import platform
 from datetime import datetime
 from sys import exc_info
 from traceback import format_exc
-from typing import Dict, Optional
 from uuid import uuid4
 
 from .compat import urlencode
@@ -35,15 +35,15 @@ current_os_release = platform.system()
 current_os_version = platform.release()
 
 
-class Incident(object):
+class Incident:
     def __init__(
         self,
-        job_id: Optional[str],
-        request_id: Optional[str],
-        driver: Optional[str],
-        driver_version: Optional[str],
-        error_message: Optional[str],
-        error_stack_trace: Optional[str],
+        job_id: str | None,
+        request_id: str | None,
+        driver: str | None,
+        driver_version: str | None,
+        error_message: str | None,
+        error_stack_trace: str | None,
         os: str = current_os_release,
         os_version: str = current_os_version,
     ) -> None:
@@ -63,7 +63,7 @@ class Incident(object):
         self.driver = str(driver)
         self.driverVersion = str(driver_version)
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         ret = {
             "Tags": [
                 {"Name": "driver", "Value": self.driver},
@@ -92,17 +92,17 @@ class Incident(object):
         return str(self.to_dict())
 
     def __repr__(self) -> str:
-        return "Incident {id}".format(id=self.uuid)
+        return f"Incident {self.uuid}"
 
     @staticmethod
     def __generate_signature(
-        error_message: Optional[str], error_stack_trace: Optional[str]
-    ) -> Optional[str]:
+        error_message: str | None, error_stack_trace: str | None
+    ) -> str | None:
         """Automatically generates signature of Incident."""
         return error_message
 
 
-class IncidentAPI(object):
+class IncidentAPI:
     """Snowflake Incident API."""
 
     def __init__(self, rest):
@@ -144,9 +144,7 @@ class IncidentAPI(object):
         if incident is None:
             cls, exc, _ = exc_info()
             if cls in CLS_BLACKLIST:
-                logger.warning(
-                    "Ignoring blacklisted exception type: {type}".format(type=cls)
-                )
+                logger.warning(f"Ignoring blacklisted exception type: {cls}")
                 return
             incident = Incident(
                 job_id,
@@ -169,7 +167,7 @@ class IncidentAPI(object):
                 HTTP_HEADER_SERVICE_NAME
             ]
         body = incident.to_dict()
-        logger.debug("Going to report incident with body: {}".format(body))
+        logger.debug(f"Going to report incident with body: {body}")
         try:
             ret = self._rest.request(
                 "/incidents/v2/create-incident?" + urlencode({REQUEST_ID: uuid4()}),
@@ -183,9 +181,7 @@ class IncidentAPI(object):
             )
             raise
         if not ret["success"]:
-            logger.warning(
-                "Reporting incident failed for reason: '{reason}'".format(reason=ret)
-            )
+            logger.warning(f"Reporting incident failed for reason: '{ret}'")
             return
         new_incident_id = ret["data"]["incidentId"] if ret.get("data") else None
         if not new_incident_id:

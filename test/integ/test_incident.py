@@ -1,15 +1,16 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2021 Snowflake Computing Inc. All rights reserved.
 #
 
+from __future__ import annotations
+
 import warnings
 from traceback import format_exc
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
-from mock import patch
 from pytest import fail
 
 from snowflake.connector import ProgrammingError, converter

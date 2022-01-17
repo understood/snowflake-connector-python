@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2021 Snowflake Computing Inc. All rights reserved.
 #
 
-from mock import MagicMock, Mock, PropertyMock
+from __future__ import annotations
+
+from unittest.mock import MagicMock, Mock, PropertyMock
 
 from snowflake.connector.auth_webbrowser import AuthByWebBrowser
 from snowflake.connector.constants import OCSPMode
@@ -45,7 +46,7 @@ def test_auth_webbrowser_get():
     mock_socket_client.recv.return_value = (
         "\r\n".join(
             [
-                "GET /?token={}&confirm=true HTTP/1.1".format(ref_token),
+                f"GET /?token={ref_token}&confirm=true HTTP/1.1",
                 "User-Agent: snowflake-agent",
             ]
         )
@@ -88,7 +89,7 @@ def test_auth_webbrowser_post():
                 "User-Agent: snowflake-agent",
                 "Host: localhost:12345",
                 "",
-                "token={}&confirm=true".format(ref_token),
+                f"token={ref_token}&confirm=true",
             ]
         )
     ).encode("utf-8")
