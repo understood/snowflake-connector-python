@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Callable, Generator
 from typing import Callable, Generator
 from unittest import mock
 
@@ -25,8 +26,7 @@ except ImportError:
     write_pandas = None
 
 
-MYPY = False
-if MYPY:  # from typing import TYPE_CHECKING once 3.5 is deprecated
+if TYPE_CHECKING:
     from snowflake.connector import SnowflakeConnection
 
 sf_connector_version_data = [
@@ -67,7 +67,7 @@ def test_write_pandas(
         user=db_parameters["user"],
         account=db_parameters["account"],
         password=db_parameters["password"],
-    ) as cnx:  # type: SnowflakeConnection
+    ) as cnx:
         table_name = "driver_versions"
 
         if quote_identifiers:
@@ -135,7 +135,7 @@ def test_location_building_db_schema(conn_cnx, quote_identifiers: bool):
     """This tests that write_pandas constructs location correctly with database, schema and table name."""
     from snowflake.connector.cursor import SnowflakeCursor
 
-    with conn_cnx() as cnx:  # type: SnowflakeConnection
+    with conn_cnx() as cnx:
 
         def mocked_execute(*args, **kwargs):
             if len(args) >= 1 and args[0].startswith("COPY INTO"):
@@ -161,7 +161,7 @@ def test_location_building_db_schema(conn_cnx, quote_identifiers: bool):
                 quote_identifiers=quote_identifiers,
             )
             assert m_execute.called and any(
-                map(lambda e: "COPY INTO" in str(e.args), m_execute.call_args_list)
+                map(lambda e: "COPY INTO" in str(e[0]), m_execute.call_args_list)
             )
 
 
@@ -170,7 +170,7 @@ def test_location_building_schema(conn_cnx, quote_identifiers: bool):
     """This tests that write_pandas constructs location correctly with schema and table name."""
     from snowflake.connector.cursor import SnowflakeCursor
 
-    with conn_cnx() as cnx:  # type: SnowflakeConnection
+    with conn_cnx() as cnx:
 
         def mocked_execute(*args, **kwargs):
             if len(args) >= 1 and args[0].startswith("COPY INTO"):
@@ -195,7 +195,7 @@ def test_location_building_schema(conn_cnx, quote_identifiers: bool):
                 quote_identifiers=quote_identifiers,
             )
             assert m_execute.called and any(
-                map(lambda e: "COPY INTO" in str(e.args), m_execute.call_args_list)
+                map(lambda e: "COPY INTO" in str(e[0]), m_execute.call_args_list)
             )
 
 
@@ -204,7 +204,7 @@ def test_location_building(conn_cnx, quote_identifiers: bool):
     """This tests that write_pandas constructs location correctly with schema and table name."""
     from snowflake.connector.cursor import SnowflakeCursor
 
-    with conn_cnx() as cnx:  # type: SnowflakeConnection
+    with conn_cnx() as cnx:
 
         def mocked_execute(*args, **kwargs):
             if len(args) >= 1 and args[0].startswith("COPY INTO"):
@@ -228,7 +228,7 @@ def test_location_building(conn_cnx, quote_identifiers: bool):
                 quote_identifiers=quote_identifiers,
             )
             assert m_execute.called and any(
-                map(lambda e: "COPY INTO" in str(e.args), m_execute.call_args_list)
+                map(lambda e: "COPY INTO" in str(e[0]), m_execute.call_args_list)
             )
 
 
