@@ -717,7 +717,7 @@ def test_dashed_url(db_parameters):
             ) = lambda: None  # Skip tear down, there's only a mocked rest api
             assert any(
                 [
-                    c.args[1].startswith("https://test-host:443")
+                    c[0][1].startswith("https://test-host:443")
                     for c in mocked_fetch.call_args_list
                 ]
             )
@@ -741,7 +741,7 @@ def test_dashed_url_account_name(db_parameters):
             ) = lambda: None  # Skip tear down, there's only a mocked rest api
             assert any(
                 [
-                    c.args[1].startswith(
+                    c[0][1].startswith(
                         "https://test-account.snowflakecomputing.com:443"
                     )
                     for c in mocked_fetch.call_args_list
