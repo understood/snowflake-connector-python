@@ -585,7 +585,7 @@ def test_put_threshold(tmp_path, conn_cnx, is_public_test):
             autospec=SnowflakeFileTransferAgent,
         ) as mock_agent:
             cur.execute(f"put file://{file} @{stage_name} threshold=156")
-        assert mock_agent.call_args.kwargs.get("multipart_threshold", -1) == 156
+        assert mock_agent.call_args[1].get("multipart_threshold", -1) == 156
 
 
 # Snowflake on GCP does not support multipart uploads
