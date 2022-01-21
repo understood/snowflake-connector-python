@@ -464,6 +464,7 @@ def test_select_timestamp_with_scale(conn_cnx, scale, type):
     sql_text = "select a from {} order by s".format(table)
     row_count = len(cases) + 2
     col_count = 1
+    # TODO SNOW-534252
     iterate_over_test_chunk(
         type, conn_cnx, sql_text, row_count, col_count, eps=timedelta(microseconds=1)
     )
